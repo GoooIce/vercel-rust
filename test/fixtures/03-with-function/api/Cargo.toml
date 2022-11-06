@@ -5,8 +5,8 @@ authors = [ "Mike Engel <mike@mike-engel.com>" ]
 edition = "2018"
 
 [dependencies]
-http = "0.1"
-vercel_lambda = "*"
+http = "0.2"
+vercel_lambda = "https://github.com/GoooIce/vercel-rust.git"
 
 [[bin]]
 name = "user"

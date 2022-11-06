@@ -9,5 +9,5 @@ name = "hello_index"
 path = "api/hello.rs"
 
 [dependencies]
-http = "0.1"
-vercel_lambda = "*"
+http = "0.2"
+vercel_lambda = "https://github.com/GoooIce/vercel-rust.git"
