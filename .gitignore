@@ -11,4 +11,4 @@ dist/
 node_modules/
 .vercel/
 
-fixtures/**/vercel.json
+test/fixtures/**/vercel.json
