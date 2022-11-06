@@ -40,7 +40,7 @@ async function checkProbes(baseUrl, probes) {
 }
 
 function getVercelProcess(dir) {
-  const defaultArgs = ['dev', '--confirm'];
+  const defaultArgs = ['dev', '--yes'];
 
   if (process.env.VERCEL_TOKEN) {
     defaultArgs.push('--token', process.env.VERCEL_TOKEN);
