@@ -43,7 +43,7 @@ where
 ///
 /// # Panics
 /// The function panics if the Lambda environment variables are not set.
-pub fn start<R, B, E>(f: impl Handler<R, B, E>)
+pub fn start<R, B, E>(f: impl Handler<R, B, E>, runtime: Option<TokioRuntime>)
 where
     B: From<Body>,
     E: Into<VercelError>,
@@ -51,29 +51,41 @@ where
 {
     // handler requires a mutable ref
     let mut func = f;
-    lambda::run(|e: VercelEvent, _ctx: Context| {
-        let req_str = e.body;
-        let parse_result: Result<VercelRequest, Error> = serde_json::from_str(&req_str);
-        match parse_result {
-            Ok(req) => {
-                debug!("Deserialized Vercel proxy request successfully");
-                let request: http::Request<Body> = req.into();
-                func.run(request.map(|b| b.into()))
-                    .map(|resp| VercelResponse::from(resp.into_response()))
-                    .map_err(|e| e.into())
+    lambda::start(
+        |e: VercelEvent, _ctx: Context| {
+            let req_str = e.body;
+            let parse_result: Result<VercelRequest, Error> = serde_json::from_str(&req_str);
+            match parse_result {
+                Ok(req) => {
+                    debug!("Deserialized Vercel proxy request successfully");
+                    let request: http::Request<Body> = req.into();
+                    func.run(request.map(|b| b.into()))
+                        .map(|resp| VercelResponse::from(resp.into_response()))
+                        .map_err(|e| e.into())
+                }
+                Err(e) => {
+                    error!("Could not deserialize event body to VercelRequest {}", e);
+                    panic!("Could not deserialize event body to VercelRequest {}", e);
+                }
             }
-            Err(e) => {
-                error!("Could not deserialize event body to VercelRequest {}", e);
-                panic!("Could not deserialize event body to VercelRequest {}", e);
-            }
-        }
-    })
+        },
+        runtime,
+    )
 }
 
 /// A macro for starting new handler's poll for Vercel Lambda events
 #[macro_export]
 macro_rules! lambda {
     ($handler:expr) => {
-        $crate::start($handler)
+        $crate::start($handler, None)
+    };
+    ($handler:expr, $runtime:expr) => {
+        $crate::start($handler, Some($runtime))
+    };
+    ($handler:ident) => {
+        $crate::start($handler, None)
+    };
+    ($handler:ident, $runtime:expr) => {
+        $crate::start($handler, Some($runtime))
     };
 }

@@ -1,13 +1,13 @@
 {
-  "name": "vercel-rust",
+  "name": "eexfit-vercel-rust",
   "description": "Rust runtime for Vercel Functions.",
   "version": "3.1.2",
   "license": "MIT",
   "main": "./dist/index",
-  "homepage": "https://github.com/vercel-community/rust",
+  "homepage": "https://github.com/goooice/vercel-rust",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vercel-community/rust.git"
+    "url": "https://github.com/goooice/vercel-rust.git"
   },
   "scripts": {
     "build": "tsc",
